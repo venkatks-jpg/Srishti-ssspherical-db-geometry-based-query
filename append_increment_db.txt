@@ -1,0 +1,234 @@
+ARIA SETUP COMMANDS
+*****************************************************************
+
+python3 ~/srishti_prod/aria_setup_prod5.py "/media/venkatesh/DATA 1" --db ~/srishti1.db
+
+python3 ~/srishti_prod/aria_setup_prod5.py /media/venkatesh/DATA3 --db ~/srishti3.db
+
+
+ADDING TO DATABASE WHEN RUNNING ARIA OLD(ORIGINAL EXPERIMENTAL)
+****************************************************************
+
+python3 ~/srishti/aria_incremental.py "/media/venkatesh/DATA 1/paintings" ~/srishti.db
+
+python3 ~/srishti/aria_incremental.py "/media/venkatesh/DATA 1/images devotional" ~/srishti.db
+
+THIS COMMAND WILL NOT WORK FOR SRISHTI PRODUCT VERSION
+******************************************************** 
+python3 ~/srishti_prod/aria_incremental.py "/media/venkatesh/DATA 1/Chemistry" ~/srishti1.db
+
+THE FOLLOWING COMMAND WILL WORK FOR PRODUCTION VERSION
+********************************************************
+python3 ~/srishti_prod/aria_incremental.py "/media/venkatesh/DATA 1/Chemistry" --db ~/srishti1.db
+
+ADDING FOLDER TO DB
+*************************************************************************************************
+
+python3 ~/srishti_prod/aria_setup_prod3.py /media/venkatesh/DATA3/engineering_technology --db ~/srishti3.db --incremental
+
+
+************************************************************************************************
+
+INCREMENTAL FOR THE WHOLE PARTITION TO UPDATE THE DB
+*************************************************************************************************
+
+python3 ~/srishti_prod/aria_setup_prod3.py /media/venkatesh/DATA3 --db ~/srishti3.db --incremental
+
+python3 ~/srishti_prod/aria_setup_prod3.py "/media/venkatesh/DATA 1" --db ~/srishti1.db --incremental
+
+*****************************************************************************************************
+
+WHEN IN home/root DIRECTORY USE
+****************************************************************
+python3 ~/srishti/aria_incremental.py ~/srishti/language/english/
+__________________________________________________________________________________________________
+
+REMOVING ENTRY IN DB AFTER REMOVING FILE
+*********************************************************************************************
+
+sqlite3 ~/srishti1.db "DELETE FROM files WHERE path = '/media/venkatesh/DATA 1/Chemistry/filename.mp4';"
+
+REMOVING ENTRY IN DB AFTER REMOVING A FOLDER
+***********************************************************************************************
+Removing an entire folder — same command, broader path match. The domain entry in the domains table stays untouched. Only the files table loses those entries. No null domain — the domain shell exists independently of how many files are in it. Empty domain is fine, it just returns zero results.
+
+sqlite3 ~/srishti1.db "DELETE FROM files WHERE path LIKE '/media/venkatesh/DATA 1/foldername/%';"
+
+ADD NEW DOMAIN SHELL TO DATABASE
+****************************************
+
+python3 ~/srishti_prod/aria_setup_prod.py --add-domain law criminal,civil,family,property --db ~/srishti1.db
+
+
+ADD SUB DOMAIN TO EXISTING DOMAIN
+***************************************
+
+python3 ~/srishti_prod/aria_setup_prod.py --add-subdomain physics plasma_physics --keywords plasma,fusion,tokamak --db ~/srishti1.db
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+python3 ~/srishti/aria_incremental.py "/media/venkatesh/DATA 1/Chemistry" ~/srishti.db
+
+python3 ~/srishti/aria_incremental.py "/media/venkatesh/DATA 1/Drugs" ~/srishti.db
+________________________________________________________________________________________
+
+FILE COUNT
+
+sqlite3 ~/srishti.db "SELECT COUNT(*) FROM files;" 
+
+
+sqlite3 ~/srishti2.db "SELECT COUNT(*) FROM files;" 
+___________________________________________________________________________________________________________________
+
+REMOVING ENTRY FROM DB
+
+sqlite3 ~/srishti.db "DELETE FROM files WHERE path LIKE '%/srishti/maya%.html' OR path LIKE '%/srishti/maya_roam.json' OR path LIKE '%/srishti/maya_session_handoff%';"
+
+sqlite3 ~/srishti2.db "DELETE FROM files WHERE path LIKE '%/srishti/maya%.html' OR path LIKE '%/srishti/maya_roam.json' OR path LIKE '%/srishti
+/maya_session_handoff%';"
+
+DB UPDATE AFTER DELETING OR MOVING FILES
+
+sqlite3 ~/srishti.db "DELETE FROM files WHERE path LIKE '%/srishti/%';"
+
+sqlite3 ~/srishti2.db "DELETE FROM files WHERE path LIKE '%/srishti/%';"
+
+__________________________________________________________________________________________________________________________
+
+
+python3 aria_incremental.py "/media/venkatesh/e7dd6bb2-ffee-4b79-9ec1-48bee4271706/Fundamentals of Physics 1" ~/srishti2.db
+
+python3 aria_incremental.py "/media/venkatesh/e7dd6bb2-ffee-4b79-9ec1-48bee4271706/Fundamentals of Physics 2" ~/srishti2.db
+
+________________________________________________________________________________________________________________________________________
+
+REMOVAL FROM DB
+
+Verify how many rows get affected:
+
+sqlite3 ~/srishti.db "SELECT COUNT(*) FROM files WHERE path LIKE '/usr/%' OR path LIKE '/lib/%' OR path LIKE '%site-packages%' OR path LIKE '%dist-packages%';"
+
+Deletion of entries:
+
+sqlite3 ~/srishti.db "DELETE FROM files WHERE path LIKE '/usr/%' OR path LIKE '/lib/%' OR path LIKE '%site-packages%' OR path LIKE '%dist-packages%';"
+
+__________________________________________________________________________________________________________________________________________________________
+SPACE CHECK HOME DRIVE
+
+df -h ~
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ls ~/DATA 1/ | head -20
+
+Files moved
+
+Moved  Folders from DATA 1 to WINDATA:  mount point    "/media/venkatesh/DATA 1/
+
+Russian  and Serials Russki to WINDATA  Religion to home DATA
+
+Moved folders from 449 GN External hdd to WINDATA :  mount point "/media/venkatesh/e7dd6bb2-ffee-4b79-9ec1-48bee4271706/
+
+Master and Margharita  and sherlock classical
+________________________________________________________________________________________________________________________________________________________
+
+WHISPER COMMANDS
+*************************************
+
+SCAN WHISPER
+******************
+
+python3 ~/srishti/maya_whisper.py --scan
+
+RUN WHISPER
+***************************
+
+python3 ~/srishti/maya_whisper.py
+
+TO STOP
+****************
+
+shisper its as usual ctrl+c
+
+IF PROCESS TERMINATED AT MID-RUN THEN BEFORE STARTING
+*******************************************************************
+
+rm /tmp/maya_whisper.lock
+
+THEN RUN THE INSTANCE
+****************************************************
+
+python3 ~/srishti/maya_whisper.py
+
+___________________________________________________________________________________________________________________________________________________
+
+EXCLUDED FROM WHISPER
+***************************************************************************************
+
+"/media/venkatesh/e7dd6bb2-ffee-4b79-9ec1-48bee4271706/Music"
+
+"/media/venkatesh/e7dd6bb2-ffee-4b79-9ec1-48bee4271706/ai models"
+
+TO RUN AFTER HOUSEKEEPING IF NECESSARY TO REMOVE GHOST ENTRIES
+*********************************************************************************************
+
+sqlite3 ~/srishti1.db "DELETE FROM files WHERE path LIKE '/media/venkatesh/DATA 1/%' AND NOT EXISTS (SELECT 1 FROM files f2 WHERE f2.path = files.path LIMIT 0);"
+
+NUMBER OF FILES IN A FOLDER
+*******************************************************************************************
+
+sqlite3 ~/srishti3.db "SELECT COUNT(*) FROM files WHERE domain='science_fiction' AND silent=0;"
+sqlite3 ~/srishti3.db "SELECT COUNT(*) FROM files WHERE domain='fantasy' AND silent=0;"
+sqlite3 ~/srishti3.db "SELECT COUNT(*) FROM files WHERE domain='pictures_paintings' AND silent=0;"
+sqlite3 ~/srishti3.db "SELECT COUNT(*) FROM files WHERE domain='fiction' AND silent=0;"
+
+NUMBER OF FILES IN MULTIPLE FOLDERS IN SINGLE COMMAND
+************************************************************************************************
+
+sqlite3 ~/srishti3.db "SELECT domain, COUNT(*) FROM files WHERE domain IN ('science_fiction','fantasy','pictures_paintings','fiction') AND silent=0 GROUP BY domain ORDER BY COUNT(*) DESC;"
+
+RUNNING WHISPER
+***************************************************************************************************
+
+python3 ~/srishti_prod/maya_whisper.py --scan
+
+python3 ~/srishti_prod/maya_whisper.py --daemon
+
+FOR CHM LIT TRANSCRIPTION INSTALL IN ROOT NOT IN SRISHTI PROD FOLDER
+****************************************************************************************************
+
+sudo apt install calibre
+sudo apt install archmage
+
+
+LYNX COMMAND FOR CONVERTING HTML TO TEXT
+****************************************************************************************************
+
+FOR A FILE
+*************************************************************
+
+lynx -dump filename.html > filename.txt
+
+lynx -dump "idea_continuation_request01.html" > "idea_continuation_request01.txt"
+
+lynx -dump idea continuation request.html > idea continuation request.txt
+
+FOR A WHOLE FOLDER
+********************************************************************************************************
+
+for f in *.html; do lynx -dump "$f" > "${f%.html}.txt"; done
+*********************************************************************************************************
+The 25 unclassified in DATA1 — those are genuinely ambiguous files that the classifier correctly refused to force into a domain. When you want to look at them:
+
+
+sqlite3 ~/srishti1.db "SELECT name, path FROM files WHERE domain='unclassified';"
+
+
+
+
+
+
+
+

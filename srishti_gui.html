@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Srishti — Spherical Knowledge Database</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px; color: #333333;
+  background-color: #FFFFCC;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: #FFFFAA;
+  border-bottom: 2px solid #003366;
+  padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-left h1 {
+  font-size: 20px; font-weight: bold; font-style: italic; color: #003366;
+}
+.header-left p {
+  font-size: 10px; color: #666666; margin-top: 1px;
+}
+.header-right {
+  font-size: 10px; color: #666666; font-style: italic; text-align: right;
+}
+
+/* ── DB TOGGLE ── */
+.db-toggle {
+  background: #FFFFF0;
+  border-bottom: 1px solid #cccc88;
+  padding: 5px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.db-toggle label {
+  font-size: 10px; font-weight: bold; color: #003366;
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.db-toggle select {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px; padding: 2px 6px;
+  border: 1px solid #003366; background: #FFFFCC; color: #003366;
+  border-radius: 2px; cursor: pointer;
+}
+.db-toggle select:focus { outline: none; border-color: #990000; }
+
+/* ── DOMAIN BAR ── */
+.domain-bar {
+  background: #FFFFF0;
+  border-bottom: 1px solid #cccc88;
+  padding: 6px 16px;
+  display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+}
+.domain-bar label {
+  font-size: 10px; font-weight: bold; color: #003366;
+  text-transform: uppercase; letter-spacing: .05em;
+  margin-right: 4px; white-space: nowrap;
+}
+.dbtn {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px; padding: 3px 8px; cursor: pointer;
+  border-radius: 2px; border: 1px solid #003366;
+  background: #FFFFCC; color: #003366; white-space: nowrap;
+}
+.dbtn:hover { background: #003366; color: #ffffff; }
+.dbtn.active { background: #003366; color: #ffffff; }
+.dbtn.compact { border-color: #996600; color: #996600; }
+.dbtn.compact:hover, .dbtn.compact.active {
+  background: #996600; color: #ffffff; border-color: #996600;
+}
+.dbtn.restricted { border-color: #990000; color: #990000; }
+.dbtn.restricted:hover { background: #990000; color: #ffffff; }
+
+/* ── SEARCH ROW ── */
+.search-row {
+  background: #FFFFAA;
+  border-bottom: 2px solid #003366;
+  padding: 8px 16px;
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+#searchInput {
+  flex: 1; min-width: 200px;
+  padding: 6px 10px; border: 2px solid #003366; border-radius: 2px;
+  font-family: Verdana, Arial, sans-serif; font-size: 12px;
+  color: #333333; background: #ffffff; outline: none;
+}
+#searchInput:focus { border-color: #990000; }
+#searchBtn {
+  padding: 6px 16px; background: #003366; color: #ffffff;
+  border: none; font-family: Verdana, Arial, sans-serif;
+  font-size: 12px; font-weight: bold; border-radius: 2px; cursor: pointer;
+}
+#searchBtn:hover { background: #990000; }
+#clearBtn {
+  padding: 6px 12px; background: #FFFFCC; color: #003366;
+  border: 1px solid #003366; font-family: Verdana, Arial, sans-serif;
+  font-size: 11px; border-radius: 2px; cursor: pointer;
+}
+#clearBtn:hover { background: #003366; color: #ffffff; }
+
+/* ── STATUS / NOTICE BAR ── */
+.notice-bar {
+  min-height: 22px; padding: 4px 16px;
+  background: #FFFFF0; border-bottom: 1px solid #cccc88;
+  font-size: 10px; color: #003366; font-style: italic;
+  display: flex; align-items: center; gap: 8px;
+}
+.notice-bar.restricted-notice {
+  background: #fff0f0; border-color: #ffaaaa; color: #990000;
+  font-style: normal; font-weight: bold;
+}
+
+/* ── RESULTS ── */
+.results-area {
+  padding: 12px 16px;
+}
+.results-info {
+  font-size: 10px; color: #666666; margin-bottom: 8px;
+  font-style: italic;
+}
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 6px;
+}
+.file-card {
+  background: #ffffff;
+  border: 1px solid #cccc88;
+  border-left: 3px solid #003366;
+  border-radius: 0 4px 4px 0;
+  padding: 7px 10px;
+  cursor: pointer;
+  transition: border-left-color 0.15s;
+}
+.file-card:hover {
+  border-left-color: #990000;
+  background: #FFFFEE;
+}
+.file-card .fname {
+  font-size: 12px; font-weight: bold; color: #003366;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.file-card .fmeta {
+  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+}
+.file-card .dtag {
+  font-size: 9px; background: #003366; color: #ffffff;
+  padding: 1px 5px; border-radius: 2px; white-space: nowrap;
+}
+.file-card .fsize {
+  font-size: 9px; color: #888888;
+}
+.file-card .fdate {
+  font-size: 9px; color: #888888;
+}
+.file-card .fpath {
+  font-size: 9px; color: #aaaaaa;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 3px;
+}
+
+/* ── PAGINATION ── */
+.pagination {
+  display: flex; gap: 6px; align-items: center;
+  margin-top: 12px; flex-wrap: wrap;
+}
+.page-btn {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px; padding: 3px 8px; cursor: pointer;
+  border: 1px solid #003366; background: #FFFFCC; color: #003366;
+  border-radius: 2px;
+}
+.page-btn:hover { background: #003366; color: #ffffff; }
+.page-btn.active { background: #003366; color: #ffffff; }
+.page-info { font-size: 10px; color: #666666; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: #003366; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Srishti</h1>
+    <p>Spherical Knowledge Database &nbsp;&middot;&nbsp;
+       r = &phi;<sup>n</sup> &nbsp;&middot;&nbsp;
+       &phi; = 1.6180339887498948482&hellip;</p>
+  </div>
+  <div class="header-right">
+    <div id="dbLabel">DB2 &mdash; Production</div>
+    <div id="fileCount" style="margin-top:2px;"></div>
+  </div>
+</div>
+
+<!-- DB Toggle -->
+<div class="db-toggle">
+  <label>Database</label>
+  <select id="dbSelect" onchange="switchDB()">
+    <option value="2">DB2 &mdash; DATA3 (Production)</option>
+    <option value="1">DB1 &mdash; DATA 1</option>
+  </select>
+</div>
+
+<!-- Domain Buttons -->
+<div class="domain-bar">
+  <label>Domain</label>
+  <button class="dbtn" onclick="selectDomain('physics')">Physics</button>
+  <button class="dbtn" onclick="selectDomain('chemistry')">Chemistry</button>
+  <button class="dbtn" onclick="selectDomain('biology')">Biology</button>
+  <button class="dbtn" onclick="selectDomain('mathematics')">Mathematics</button>
+  <button class="dbtn" onclick="selectDomain('medicine')">Medicine</button>
+  <button class="dbtn" onclick="selectDomain('science_fiction')">Sci-Fi</button>
+  <button class="dbtn" onclick="selectDomain('fantasy')">Fantasy</button>
+  <button class="dbtn" onclick="selectDomain('fiction')">Fiction</button>
+  <button class="dbtn" onclick="selectDomain('pictures_paintings')">Paintings</button>
+  <button class="dbtn" onclick="selectDomain('music')">Music</button>
+  <button class="dbtn" onclick="selectDomain('philosophy')">Philosophy</button>
+  <button class="dbtn" onclick="selectDomain('religion')">Religion</button>
+  <button class="dbtn" onclick="selectDomain('history')">History</button>
+  <button class="dbtn" onclick="selectDomain('geography')">Geography</button>
+  <button class="dbtn" onclick="selectDomain('computer_science')">Computer Science</button>
+  <button class="dbtn" onclick="selectDomain('electronics')">Electronics</button>
+  <button class="dbtn" onclick="selectDomain('engineering_technology')">Engineering</button>
+  <button class="dbtn" onclick="selectDomain('astrology')">Astrology</button>
+  <button class="dbtn" onclick="selectDomain('languages')">Languages</button>
+  <button class="dbtn compact" onclick="selectDomain('compacted_files')">Archives</button>
+  <button class="dbtn restricted" onclick="programDBClick()">Programs &amp; DB</button>
+  <button class="dbtn" style="border-color:#888;color:#888;" onclick="clearDomain()">All</button>
+</div>
+
+<!-- Search Row -->
+<div class="search-row">
+  <input id="searchInput" type="text"
+         placeholder="Search by filename or path..."
+         autocomplete="off"
+         onkeydown="if(event.key==='Enter') doSearch()">
+  <button id="searchBtn" onclick="doSearch()">Search</button>
+  <button id="clearBtn" onclick="clearAll()">Clear</button>
+</div>
+
+<!-- Notice Bar -->
+<div class="notice-bar" id="noticeBar">
+  The intelligence is in the geometry.
+</div>
+
+<!-- Results -->
+<div class="results-area">
+  <div class="results-info" id="resultsInfo"></div>
+  <div class="results-grid" id="resultsGrid"></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<script>
+const S1 = 'http://localhost:7509/query';
+const S2 = 'http://localhost:7509/query2';
+
+let currentDB      = 2;
+let currentDomain  = '';
+let currentText    = '';
+let currentPage    = 1;
+let allResults     = [];
+let totalCount     = 0;
+const PAGE_SIZE    = 30;
+let programDBMode  = false;
+
+function endpoint() {
+  return currentDB === 2 ? S2 : S1;
+}
+
+function switchDB() {
+  currentDB = parseInt(document.getElementById('dbSelect').value);
+  document.getElementById('dbLabel').textContent =
+    currentDB === 2 ? 'DB2 — Production' : 'DB1 — DATA 1';
+  currentPage = 1;
+  doSearch();
+}
+
+function selectDomain(d) {
+  programDBMode = false;
+  clearNotice();
+  currentDomain = d;
+  currentPage   = 1;
+  // Update button states
+  document.querySelectorAll('.dbtn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  doSearch();
+}
+
+function clearDomain() {
+  programDBMode = false;
+  clearNotice();
+  currentDomain = '';
+  currentPage   = 1;
+  document.querySelectorAll('.dbtn').forEach(b => b.classList.remove('active'));
+  doSearch();
+}
+
+function programDBClick() {
+  // Check if search field has a filename
+  const text = document.getElementById('searchInput').value.trim();
+  if (!text) {
+    // Show restricted access notice
+    programDBMode = true;
+    showRestrictedNotice();
+    // Highlight the button
+    document.querySelectorAll('.dbtn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    // Clear results
+    document.getElementById('resultsGrid').innerHTML = '';
+    document.getElementById('resultsInfo').textContent = '';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+  // Has filename — proceed with query
+  programDBMode  = false;
+  clearNotice();
+  currentDomain  = 'program_db';
+  currentPage    = 1;
+  document.querySelectorAll('.dbtn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  doSearch();
+}
+
+function showRestrictedNotice() {
+  const bar = document.getElementById('noticeBar');
+  bar.className = 'notice-bar restricted-notice';
+  bar.textContent =
+    'Programs & Databases — Restricted Access. ' +
+    'Please specify the file name fully with extension in the search field above, then click Programs & DB again.';
+}
+
+function clearNotice() {
+  programDBMode = false;
+  const bar = document.getElementById('noticeBar');
+  bar.className = 'notice-bar';
+  bar.textContent = 'The intelligence is in the geometry.';
+}
+
+async function doSearch() {
+  if (programDBMode) {
+    // User typed something — now execute the program_db query
+    const text = document.getElementById('searchInput').value.trim();
+    if (text) {
+      programDBMode = false;
+      clearNotice();
+      currentDomain = 'program_db';
+      currentPage   = 1;
+    } else {
+      showRestrictedNotice();
+      return;
+    }
+  }
+
+  currentText = document.getElementById('searchInput').value.trim();
+  currentPage = 1;
+
+  const payload = { limit: 500 };
+  if (currentDomain) payload.domain  = currentDomain;
+  if (currentText)   payload.text    = currentText;
+
+  try {
+    const resp = await fetch(endpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    allResults = data.results || [];
+    totalCount = data.count  || 0;
+    renderPage(1);
+    // Update file count in header
+    document.getElementById('fileCount').textContent =
+      totalCount.toLocaleString() + ' files';
+  } catch(e) {
+    document.getElementById('resultsInfo').textContent =
+      'Cannot reach Srishti gate. Is srishti_gate.py running on port 7509?';
+    document.getElementById('resultsGrid').innerHTML = '';
+  }
+}
+
+function renderPage(page) {
+  currentPage = page;
+  const start   = (page - 1) * PAGE_SIZE;
+  const slice   = allResults.slice(start, start + PAGE_SIZE);
+  const grid    = document.getElementById('resultsGrid');
+  const info    = document.getElementById('resultsInfo');
+  const pageDiv = document.getElementById('pagination');
+
+  if (allResults.length === 0) {
+    info.textContent = totalCount > 0
+      ? totalCount.toLocaleString() + ' files found — showing page ' + page
+      : 'No results.';
+    grid.innerHTML = '';
+    pageDiv.innerHTML = '';
+    return;
+  }
+
+  info.textContent = totalCount.toLocaleString() + ' files found — showing ' +
+    (start + 1) + '–' + Math.min(start + PAGE_SIZE, allResults.length) +
+    ' of ' + allResults.length.toLocaleString();
+
+  grid.innerHTML = '';
+  slice.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'file-card';
+    card.title = f.path || f.name;
+
+    const fname = document.createElement('div');
+    fname.className = 'fname';
+    fname.textContent = f.name || '—';
+
+    const meta = document.createElement('div');
+    meta.className = 'fmeta';
+
+    const dtag = document.createElement('span');
+    dtag.className = 'dtag';
+    dtag.textContent = (f.domain || f.r_label || '?').replace(/_/g, ' ');
+
+    const fsize = document.createElement('span');
+    fsize.className = 'fsize';
+    fsize.textContent = f.size ? formatSize(f.size) : '';
+
+    const fdate = document.createElement('span');
+    fdate.className = 'fdate';
+    fdate.textContent = f.mtime || '';
+
+    meta.appendChild(dtag);
+    if (f.size) meta.appendChild(fsize);
+    if (f.mtime) meta.appendChild(fdate);
+
+    const fpath = document.createElement('div');
+    fpath.className = 'fpath';
+    fpath.textContent = f.path || '';
+
+    card.appendChild(fname);
+    card.appendChild(meta);
+    card.appendChild(fpath);
+
+    card.onclick = () => openFile(f.path);
+    grid.appendChild(card);
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(allResults.length / PAGE_SIZE);
+  pageDiv.innerHTML = '';
+  if (totalPages <= 1) return;
+
+  const addBtn = (label, pg, active) => {
+    const b = document.createElement('button');
+    b.className = 'page-btn' + (active ? ' active' : '');
+    b.textContent = label;
+    b.onclick = () => renderPage(pg);
+    pageDiv.appendChild(b);
+  };
+
+  if (page > 1) addBtn('← Prev', page - 1, false);
+
+  const start_p = Math.max(1, page - 2);
+  const end_p   = Math.min(totalPages, page + 2);
+  for (let i = start_p; i <= end_p; i++) {
+    addBtn(String(i), i, i === page);
+  }
+
+  if (page < totalPages) addBtn('Next →', page + 1, false);
+
+  const pi = document.createElement('span');
+  pi.className = 'page-info';
+  pi.textContent = 'Page ' + page + ' of ' + totalPages;
+  pageDiv.appendChild(pi);
+}
+
+async function openFile(path) {
+  if (!path) return;
+  try {
+    await fetch('http://localhost:7509/open', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path })
+    });
+  } catch(e) { /* silent */ }
+}
+
+function clearAll() {
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.dbtn').forEach(b => b.classList.remove('active'));
+  currentDomain = '';
+  currentText   = '';
+  programDBMode = false;
+  clearNotice();
+  allResults    = [];
+  totalCount    = 0;
+  document.getElementById('resultsGrid').innerHTML = '';
+  document.getElementById('resultsInfo').textContent = '';
+  document.getElementById('pagination').innerHTML = '';
+  document.getElementById('fileCount').textContent = '';
+}
+
+function formatSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  if (bytes < 1024 * 1024 * 1024)
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+}
+
+// Boot — load stats
+async function boot() {
+  try {
+    const resp = await fetch('http://localhost:7509/health');
+    const data = await resp.json();
+    const n = currentDB === 2 ? data.files2 : data.files1;
+    if (n) document.getElementById('fileCount').textContent =
+      n.toLocaleString() + ' files';
+  } catch(e) { /* server not running yet */ }
+}
+
+boot();
+</script>
+</body>
+</html>
