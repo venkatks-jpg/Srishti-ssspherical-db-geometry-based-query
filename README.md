@@ -1,9 +1,8 @@
-# SRISHTI — Spherical Knowledge Database v2.0
+# SRISHTI — Spherical_nested_shell Knowledge Database v2.0
 
 > **Let the geometry be your query server**
 
-**Main Architect:** Dr. K.S. Venkatesh, Chennai, India  
-**Collaborator / Assistant:** Claude — Anthropic — Instance named Srishti  
+**Main Architect:** Dr. K.S. Venkatesh, Chennai, India    
 **License:** GNU GPL 3.0 — Free for all. Profit for none.  
 **φ = 1.6180339887498948482…**
 
